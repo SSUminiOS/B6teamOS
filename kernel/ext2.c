@@ -10,23 +10,18 @@
 #define NUM_BLOCKS 1024
 
 int ext2_open(const char* path, int flags, mode_t mode) {
-    // inode 할당 및 초기화
     ext2_file_t* file = malloc(sizeof(ext2_file_t));
     if (file == NULL) {
+        // 메모리 할당 실패 처리
         return -1;
     }
-    file->inode = malloc(sizeof(ext2_inode_t));
-    if (file->inode == NULL) {
-        free(file);
-        return -1;
-    }
-    if (get_inode_from_path(path, file->inode) != 0) {
-        free(file->inode);
+    if (get_inode_from_path(path, &file->inode) < 0) {
+        // get_inode_from_path 실패 처리
         free(file);
         return -1;
     }
     file->pos = 0;
-    return (int)file;
+    return (int)(uintptr_t)file; // 안전한 형식 캐스팅
 }
 
 int ext2_read(int fd, void* buf, size_t count) {

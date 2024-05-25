@@ -41,6 +41,9 @@ int main() {
         else if (strcmp(input, "app") ==0) {
             app_main();
         }
+        else if (strcmp(input, "api") ==0) {
+            api_main();
+        }
         else {
             system(input);
         }
