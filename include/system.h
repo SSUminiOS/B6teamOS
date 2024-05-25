@@ -10,4 +10,5 @@ void minisystem();
 void test1_main();
 void test2_main();
 void test3_main();
+void app_main();
 #endif

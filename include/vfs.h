@@ -2,6 +2,8 @@
 #ifndef VFS_H
 #define VFS_H
 
+#include <sys/types.h>
+
 #define VFS_O_RDONLY 0x01
 #define VFS_O_WRONLY 0x02
 #define VFS_O_RDWR   0x03

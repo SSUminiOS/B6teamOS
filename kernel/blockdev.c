@@ -1,6 +1,9 @@
+// blockdev.c
 #include "blockdev.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <stdlib.h>
 
 #define BLOCK_SIZE 4096    // 블록 크기를 4096 바이트로 정의합니다.
 #define NUM_BLOCKS 1024    // 블록의 수를 정의합니다.

@@ -1,7 +1,10 @@
+// app.c
 #include <stdio.h>
-#include "system.h"
+#include <stdlib.h>
+#include <string.h>
+#include "vfs.h"
 
-int main() {
+int app_main() {
     // 파일 생성
     int fd = vfs_open("/example.txt", VFS_O_CREAT | VFS_O_WRONLY, 0644);
     if (fd < 0) {

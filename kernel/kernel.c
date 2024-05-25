@@ -38,6 +38,9 @@ int main() {
         else if (strcmp(input, "test3") == 0) {
             test3_main();
         }
+        else if (strcmp(input, "app") ==0) {
+            app_main();
+        }
         else {
             system(input);
         }
