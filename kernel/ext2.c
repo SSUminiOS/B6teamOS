@@ -6,6 +6,8 @@
 #include <stdbool.h>
 #include "ext2.h"
 #include "blockdev.h"
+#define BLOCK_SIZE 4096
+#define NUM_BLOCKS 1024
 
 int ext2_open(const char* path, int flags, mode_t mode) {
     // inode 할당 및 초기화
@@ -36,7 +38,7 @@ int ext2_read(int fd, void* buf, size_t count) {
     size_t bytes_to_read = (remaining < count) ? remaining : count;
 
     // 데이터 블록에서 읽기
-    read_blocks(file->inode->blocks, file->pos, buf, bytes_to_read);
+    read_blocks(file->inode, buf, bytes_to_read, file->pos);
     file->pos += bytes_to_read;
     return bytes_to_read;
 }
@@ -48,7 +50,7 @@ int ext2_write(int fd, const void* buf, size_t count) {
     }
 
     // 데이터 블록에 쓰기
-    write_blocks(file->inode->blocks, file->pos, buf, count);
+    write_blocks(file->inode, buf, count, file->pos);
     file->pos += count;
     return count;
 }
