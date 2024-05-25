@@ -16,17 +16,23 @@ struct File {
 
 struct Directory {
     char name[MAX_DIR_NAME];
-    struct File files[MAX_FILES];
+    struct File* files;
     int fileCount;
+    int maxFiles;
 };
 
 struct FileSystem {
-    struct Directory directories[MAX_DIRECTORIES];
+    struct Directory* directories;
     int dirCount;
 };
 
 void initFileSystem(struct FileSystem* fs) {
     fs->dirCount = 0;
+    fs->directories = (struct Directory*)malloc(MAX_DIRECTORIES * sizeof(struct Directory));
+    for (int i = 0; i < MAX_DIRECTORIES; i++) {
+        fs->directories[i].files = NULL;
+        fs->directories[i].maxFiles = 0;
+    }
 }
 
 int createDirectory(struct FileSystem* fs, char* name) {
@@ -40,12 +46,14 @@ int createDirectory(struct FileSystem* fs, char* name) {
         }
     }
 
-    strcpy(fs->directories[fs->dirCount].name, name);
-    fs->directories[fs->dirCount].fileCount = 0;
+    struct Directory* dir = &fs->directories[fs->dirCount];
+    strcpy(dir->name, name);
+    dir->fileCount = 0;
+    dir->maxFiles = MAX_FILES;
+    dir->files = (struct File*)malloc(dir->maxFiles * sizeof(struct File));
     fs->dirCount++;
     return 0; // Success
 }
-
 int createFile(struct FileSystem* fs, char* dirName, char* fileName, char* content) {
     int dirIndex = -1;
     for (int i = 0; i < fs->dirCount; i++) {
@@ -145,10 +153,8 @@ int deleteFile(struct FileSystem* fs, char* dirName, char* fileName) {
 
     for (int i = 0; i < dir->fileCount; i++) {
         if (strcmp(dir->files[i].name, fileName) == 0) {
-            for (int j = i; j < dir->fileCount - 1; j++) {
-                dir->files[j] = dir->files[j + 1];
-            }
-            dir->fileCount--;
+            dir->files[i].name[0] = '\0'; // Set the file name to an empty string
+            dir->files[i].content[0] = '\0'; // Set the file content to an empty string
             return 0; // Success
         }
     }
@@ -217,12 +223,18 @@ void searchFiles(struct FileSystem* fs, char* dirName, char* keyword) {
     }
 
     struct Directory* dir = &fs->directories[dirIndex];
+    bool found = false;
 
     printf("Files containing '%s' in directory '%s':\n", keyword, dirName);
     for (int i = 0; i < dir->fileCount; i++) {
         if (strstr(dir->files[i].content, keyword) != NULL) {
             printf("%s\n", dir->files[i].name);
+            found = true;
         }
+    }
+
+    if (!found) {
+        printf("No files found containing '%s'.\n", keyword);
     }
 }
 
@@ -281,7 +293,7 @@ return -5; // Source file not found
 void api_main() {
     struct FileSystem fs;
     initFileSystem(&fs);
-    printf("create direc");
+    printf("create direc\n");
 
     // 디렉토리 생성하기
     if (createDirectory(&fs, "root") == 0) {
@@ -289,7 +301,7 @@ void api_main() {
     } else {
         printf("Failed to create directory.\n");
     }
-    printf("create file");
+    printf("create file\n");
     // 파일 생성하기
     if (createFile(&fs, "root", "test.txt", "Hello, World!") == 0) {
         printf("File created successfully.\n");
@@ -327,10 +339,11 @@ void api_main() {
     searchFiles(&fs, "root", "Updated");
 
     // 파일 복사하기
-    if (copyFile(&fs, "root", "test.txt", "root", "test_copy.txt") == 0) {
+    int copyResult = copyFile(&fs, "root", "test.txt", "root", "test_copy.txt");
+    if (copyResult == 0) {
         printf("File copied successfully.\n");
     } else {
-        printf("Failed to copy file.\n");
+        printf("Failed to copy file. Error code: %d\n", copyResult);
     }
 
     // 파일 삭제하기
