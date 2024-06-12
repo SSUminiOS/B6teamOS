@@ -2,14 +2,14 @@
 CC=gcc
 CFLAGS=-Wall -g -Iinclude
 # Linker flags
-LDFLAGS=-lreadline -lpthread
+LDFLAGS=-lreadline
 
 # The build target executable:
 TARGET=minios
 
 # Source, Object files
-SRCS=kernel/kernel.c kernel/system.c kernel/test1.c kernel/test2.c kernel/test3.c kernel/local_mutex.c kernel/app.c kernel/vfs.c kernel/ext2.c kernel/blockdev.c kernel/api1.c
-OBJS=$(SRCS:.c=.o)
+SRCS=kernel/kernel.c kernel/system.c kernel/6dir.c
+OBJS=$(SRCS:.c=.o) 
 
 # Include directory
 INCLUDE_DIR=include
@@ -26,4 +26,3 @@ $(TARGET): $(OBJS)
 # Clean up:
 clean:
 	rm -f $(OBJS) $(TARGET)
-
